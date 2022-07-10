@@ -2,7 +2,6 @@
 var city = "";
 // variable declaration
 var searchCity = $("#search-city");
-var searchButton = $("#search-button");
 var clearButton = $("#clear-history");
 var currentCity = $("#current-city");
 var currentTemperature = $("#temperature");
@@ -61,6 +60,8 @@ function currentWeather(city) {
         var ws = response.wind.speed;
         var windsmph = (ws * 2.237).toFixed(1);
         $(currentWSpeed).html(windsmph + "MPH");
+        forecast(response.coord.lon,response.coord.lat);
+        //local storage
         if(response.cod==200){
             sCity=JSON.parse(localStorage.getItem("cityname"));
             console.log(sCity);
@@ -81,6 +82,7 @@ function currentWeather(city) {
         }
     });
 }
+//remove lines 85-96 not needed
 // This function returns the UVIindex response.
 function UVIndex(ln, lt) {
     //lets build the url for uvindex.
@@ -94,24 +96,34 @@ function UVIndex(ln, lt) {
 }
 
 // Here we display the 5 days forecast for the current city.
-function forecast(cityid){
+function forecast(lon, lat){
     var dayover= false;
-    var queryforcastURL="https://api.openweathermap.org/data/2.5/forecast?id="+cityid+"&appid="+APIKey;
+    //var queryforcastURL="https://api.openweathermap.org/data/2.5/onecall?id="+cityid+"&appid="+APIKey;
+    var queryforcastURL = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=hourly,minutely&units=imperial&appid=${APIKey}`
+
+    /* fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=hourly,minutely&units=imperial&appid=${APIKey}`).then(res => res.json()).then(data => {
+            console.log(data)
+            //showWeatherData(data);
+        }) */
     $.ajax({
         url:queryforcastURL,
         method:"GET"
     }).then(function(response){
+        $(currentUvindex).html(response.current.uvi);
         
         for (i=0;i<5;i++){
-            var date= new Date((response.list[((i+1)*8)-1].dt)*1000).toLocaleDateString();
-            var iconcode= response.list[((i+1)*8)-1].weather[0].icon;
+            var date= new Date((response.daily[i].dt)*1000).toLocaleDateString();
+            var iconcode= response.daily[i].weather[0].icon;
             var iconurl="https://openweathermap.org/img/wn/"+iconcode+".png";
-            var tempK= response.list[((i+1)*8)-1].main.temp;
-            var tempF=(((tempK-273.5)*1.80)+32).toFixed(2);
-            var humidity= response.list[((i+1)*8)-1].main.humidity;
+            //var tempK= response.list[((i+1)*8)-1].main.temp;
+           // var tempF=(((tempK-273.5)*1.80)+32).toFixed(2);
+           var tempF = response.daily[i].temp.max;
+            var humidity= response.daily[i].humidity;
+            var wind= response.daily[i].wind_speed + ' mph';
         
             $("#fDate"+i).html(date);
             $("#fImg"+i).html("<img src="+iconurl+">");
+            $("#wind"+i).html(tempF+"&#8457");
             $("#fTemp"+i).html(tempF+"&#8457");
             $("#fHumidity"+i).html(humidity+"%");
         }
