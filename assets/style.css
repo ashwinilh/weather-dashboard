@@ -110,3 +110,10 @@ font-weight: 100;
         overflow-y: scroll;
     }
 }
+@media only screen and ( max-width: 1000px) {
+    .future-forecast{
+        justify-content: start;
+        align-items: none;
+        overflow-y: scroll;
+    }
+}
