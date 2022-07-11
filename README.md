@@ -6,4 +6,4 @@
 5.Generated API keys.
 6. Wrote Javascript code.
 
-7. ![screen-shot-challenge6](./assets/images/Screenshot-1.jpg)
+7. ![screen-shot-challenge_6](./assets/images/Screenshot-1.jpg)
